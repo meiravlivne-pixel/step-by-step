@@ -1,4 +1,6 @@
-// ניהול הסטייט של האפליקציה עם שמירה ב-localStorage
+// =================================================================
+// 1. ניהול הסטייט של האפליקציה ושמירה ב-localStorage
+// =================================================================
 const state = {
     hasActiveCycle: localStorage.getItem('hasActiveCycle') === 'true',
     changeTitle: localStorage.getItem('changeTitle') || '',
@@ -13,51 +15,7 @@ const state = {
     selectedEmoji: null
 };
 
-// עדכון התצוגה של המסכים והמונים
-function updateUI() {
-    const emptyStateEl = document.getElementById('empty-active-cycle');
-    const activeContentEl = document.getElementById('active-cycle-content');
-    const subtitleEl = document.getElementById('cycle-day-subtitle');
-    const circleEl = document.getElementById('cycle-progress-circle');
-
-    if (state.hasActiveCycle) {
-        // הצגת תוכן התוכנית והסתרת הדף הריק
-        emptyStateEl.style.display = 'none';
-        activeContentEl.style.display = 'block';
-        
-        // עדכון טקסטים
-        subtitleEl.innerText = `יום ${state.cycleDay} מתוך 21`;
-        circleEl.innerText = `${state.cycleDay}/21`;
-        circleEl.classList.add('active');
-        
-        document.getElementById('display-change-title').innerText = state.changeTitle;
-        document.getElementById('display-step-title').innerText = state.stepTitle;
-        
-        // עדכון מונים
-        document.getElementById('count-today').innerText = state.todaySuccesses;
-        document.getElementById('count-cycle').innerText = state.cycleSuccesses;
-        document.getElementById('count-total').innerText = state.totalSuccesses;
-        
-        const statusEl = document.getElementById('status-checkin');
-        if (state.checkinDone) {
-            statusEl.innerText = "הושלם בהצלחה! ✨";
-            statusEl.style.color = "var(--success)";
-        } else {
-            statusEl.innerText = "טרם בוצע";
-            statusEl.style.color = "var(--text-muted)";
-        }
-    } else {
-        // הצגת דף ריק כאשר אין תוכנית
-        emptyStateEl.style.display = 'block';
-        activeContentEl.style.display = 'none';
-        
-        subtitleEl.innerText = "ברוכה הבאה לתהליך";
-        circleEl.innerText = "- / -";
-        circleEl.classList.remove('active');
-    }
-}
-
-// מחסן האפשרויות המובנה (סעיף 7 באפיון)
+// מחסן האפשרויות המובנה (סעיף 7 באפיון)[cite: 1]
 const repository = {
     steps: [
         "לבחור מראש את ימי השתייה",
@@ -79,7 +37,7 @@ const repository = {
     ]
 };
 
-// נתונים זמניים שנאספים במהלך מילוי ה-Wizard
+// נתונים זמניים שנאספים במהלך מילוי ה-Wizard (סעיפים 5, 6, 8 באפיון)[cite: 1]
 let wizardData = {
     currentStep: 1,
     changeTitle: "",
@@ -94,7 +52,77 @@ let wizardData = {
     recoveryPlan: ""
 };
 
-// הגדרת השלבים ומבנה ה-Wizard
+// =================================================================
+// 2. עדכון הממשק הגרפי (UI) והניווט
+// =================================================================
+function updateUI() {
+    const emptyStateEl = document.getElementById('empty-active-cycle');
+    const activeContentEl = document.getElementById('active-cycle-content');
+    const subtitleEl = document.getElementById('cycle-day-subtitle');
+    const circleEl = document.getElementById('cycle-progress-circle');
+
+    if (state.hasActiveCycle) {
+        // הצגת תוכן התוכנית והסתרת הדף הריק
+        if (emptyStateEl) emptyStateEl.style.display = 'none';
+        if (activeContentEl) activeContentEl.style.display = 'block';
+        
+        // עדכון טקסטים במסך הבית
+        if (subtitleEl) subtitleEl.innerText = `יום ${state.cycleDay} מתוך 21`;
+        if (circleEl) {
+            circleEl.innerText = `${state.cycleDay}/21`;
+            circleEl.classList.add('active');
+        }
+        
+        const displayChange = document.getElementById('display-change-title');
+        const displayStep = document.getElementById('display-step-title');
+        if (displayChange) displayChange.innerText = state.changeTitle;
+        if (displayStep) displayStep.innerText = state.stepTitle;
+        
+        // עדכון מונים
+        document.getElementById('count-today').innerText = state.todaySuccesses;
+        document.getElementById('count-cycle').innerText = state.cycleSuccesses;
+        document.getElementById('count-total').innerText = state.totalSuccesses;
+        
+        const statusEl = document.getElementById('status-checkin');
+        if (statusEl) {
+            if (state.checkinDone) {
+                statusEl.innerText = "הושלם בהצלחה! ✨";
+                statusEl.style.color = "var(--success)";
+            } else {
+                statusEl.innerText = "טרם בוצע";
+                statusEl.style.color = "var(--text-muted)";
+            }
+        }
+    } else {
+        // הצגת דף ריק כאשר אין תוכנית (סעיף 2 באפיון)[cite: 1]
+        if (emptyStateEl) emptyStateEl.style.display = 'block';
+        if (activeContentEl) activeContentEl.style.display = 'none';
+        
+        if (subtitleEl) subtitleEl.innerText = "ברוכה הבאה לתהליך";
+        if (circleEl) {
+            circleEl.innerText = "- / -";
+            circleEl.classList.remove('active');
+        }
+    }
+}
+
+// ניווט בין הטאבים הראשיים
+function switchView(viewId, targetBtn) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+    
+    document.getElementById(`view-${viewId}`).classList.add('active');
+    if (targetBtn) targetBtn.classList.add('active');
+
+    // אם עברנו לטאב התוכנית, נרענן את ה-Wizard למצב העדכני שלו
+    if (viewId === 'plan') {
+        renderWizardStep();
+    }
+}
+
+// =================================================================
+// 3. לוגיקת ה-Wizard לבניית התוכנית (סעיפים 5, 6, 8 באפיון)[cite: 1]
+// =================================================================
 function renderWizardStep() {
     const card = document.getElementById('wizard-card-content');
     const indicator = document.getElementById('wizard-step-indicator');
@@ -102,11 +130,13 @@ function renderWizardStep() {
     const btnBack = document.getElementById('btn-wizard-back');
     const btnNext = document.getElementById('btn-wizard-next');
     
+    if (!card) return; // הגנה למקרה שהאלמנטים טרם נטענו
+
     indicator.innerText = `שלב ${wizardData.currentStep}/11`;
     btnBack.style.visibility = wizardData.currentStep === 1 ? 'hidden' : 'visible';
     btnNext.innerText = wizardData.currentStep === 11 ? 'אישור והתחלת המחזור 🎉' : 'הבא';
 
-    // עדכון סרגל שלבים ויזואלי (נקודות)
+    // עדכון סרגל שלבים ויזואלי (קוויות פרוגרס)
     bar.innerHTML = '';
     for(let i=1; i<=11; i++) {
         const dot = document.createElement('div');
@@ -117,12 +147,12 @@ function renderWizardStep() {
         bar.appendChild(dot);
     }
 
-    // הזרקת תוכן מותאם לכל שלב (סעיפים 5, 6, 8 באפיון)
+    // הזרקת תוכן מותאם לכל שלב בנפרד
     switch(wizardData.currentStep) {
         case 1:
             document.getElementById('wizard-title').innerText = "מה אני רוצה לשנות?";
             card.innerHTML = `
-                <p class="subtitle" style="margin-bottom:10px;">נסי למקד במשפט קצר את השינוי שאת רוצה ליצור כעת:</p>
+                <p class="subtitle" style="margin-bottom:10px;">נסי למקד במשפט קצר את השינוי שאת רוצה ליצור כעת (סעיף 5):</p>
                 <textarea id="w-changeTitle" style="width:100%; height:80px; padding:10px; border-radius:8px; border:1px solid var(--border);" placeholder="לדוגמה: להפחית את שתיית האלכוהול">${wizardData.changeTitle}</textarea>
             `;
             break;
@@ -167,7 +197,7 @@ function renderWizardStep() {
             break;
         case 7:
             document.getElementById('wizard-title').innerText = "הצעדים המעשיים שלי";
-            card.innerHTML = `<p class="subtitle" style="margin-bottom:10px;">בחרי צעדים שיעזרו לך ליישם (או הוסיפי אישי):</p>` + 
+            card.innerHTML = `<p class="subtitle" style="margin-bottom:10px;">בחרי צעדים שיעזרו לך ליישם (סעיף 6):</p>` + 
                 renderCheckboxList(repository.steps, wizardData.selectedSteps, 'selectedSteps') +
                 `<input type="text" placeholder="+ הוספת צעד אישי משלך" onchange="addNewOptionToWizard(this, 'selectedSteps')" style="width:100%; padding:10px; margin-top:10px; border-radius:8px; border:1px dashed var(--primary);">`;
             break;
@@ -185,22 +215,22 @@ function renderWizardStep() {
             break;
         case 10:
             document.getElementById('wizard-title').innerText = "תוכנית החזרה שלי";
-            card.innerHTML = `<p class="subtitle" style="margin-bottom:10px;">מה יעזור לך להמשיך הלאה אם לא פעלת לפי התוכנית? (בחרי או כתבי):</p>` +
+            card.innerHTML = `<p class="subtitle" style="margin-bottom:10px;">מה יעזור לך להמשיך הלאה אם לא פעלת לפי התוכנית? (סעיף 6):</p>` +
                 renderRadioList(repository.recovery, wizardData.recoveryPlan, 'recoveryPlan') +
                 `<textarea id="w-customRecovery" style="width:100%; height:60px; margin-top:10px; padding:10px; border-radius:8px; border:1px solid var(--border);" placeholder="או כתבי תוכנית חזרה מותאמת אישית">${repository.recovery.includes(wizardData.recoveryPlan) ? '' : wizardData.recoveryPlan}</textarea>`;
             break;
         case 11:
             document.getElementById('wizard-title').innerText = "סיכום ואישור התוכנית";
             card.innerHTML = `
-                <div style="font-size:14px; display:flex; flex-direction:column; gap:10px;">
-                    <div><strong>השינוי שלי:</strong> ${wizardData.changeTitle}</div>
-                    <div><strong>נקודת מוצא:</strong> ${wizardData.originStatus}</div>
-                    <div><strong>הצעד הבא:</strong> ${wizardData.nextStep}</div>
+                <div style="font-size:14px; display:flex; flex-direction:column; gap:10px; line-height:1.5;">
+                    <div><strong>השינוי שלי:</strong> ${wizardData.changeTitle || 'לא הוגדר'}</div>
+                    <div><strong>נקודת מוצא:</strong> ${wizardData.originStatus || 'לא הוגדר'}</div>
+                    <div><strong>הצעד הבא:</strong> ${wizardData.nextStep || 'לא הוגדר'}</div>
                     <div><strong>הצעדים שבחרתי:</strong> ${wizardData.selectedSteps.join(', ') || 'ללא'}</div>
                     <div><strong>מצבים מאתגרים:</strong> ${wizardData.selectedDifficulties.join(', ') || 'ללא'}</div>
                     <div><strong>אסטרטגיות:</strong> ${wizardData.selectedStrategies.join(', ') || 'ללא'}</div>
                     <div><strong>תוכנית החזרה:</strong> ${wizardData.recoveryPlan || 'חזרה בבחירה הבאה'}</div>
-                    <div><strong>מה אלמד:</strong> ${wizardData.whatToLearn}</div>
+                    <div><strong>מה אלמד:</strong> ${wizardData.whatToLearn || 'לא הוגדר'}</div>
                     <div><strong>משך הניסוי:</strong> ${wizardData.duration} ימים</div>
                 </div>
             `;
@@ -208,7 +238,7 @@ function renderWizardStep() {
     }
 }
 
-// פונקציות עזר לייצור רשימות בחירה
+// פונקציות עזר לייצור רשימות בחירה ב-Wizard
 function renderCheckboxList(items, selectedArray, propertyName) {
     return `<div class="checkbox-list">` + items.map(item => {
         const checked = selectedArray.includes(item) ? 'checked' : '';
@@ -219,7 +249,7 @@ function renderCheckboxList(items, selectedArray, propertyName) {
 function renderRadioList(items, selectedValue, propertyName) {
     return `<div class="checkbox-list">` + items.map(item => {
         const checked = selectedValue === item ? 'checked' : '';
-        return `<label class="checkbox-item"><input type="radio" name="wizard-radio" value="${item}" ${checked} onchange="wizardData.recoveryPlan = ' ${item}'.trim()"> <span>${item}</span></label>`;
+        return `<label class="checkbox-item"><input type="radio" name="wizard-radio" value="${item}" ${checked} onchange="wizardData.recoveryPlan = '${item}'.trim()"> <span>${item}</span></label>`;
     }).join('') + `</div>`;
 }
 
@@ -240,16 +270,15 @@ function addNewOptionToWizard(inputElement, property) {
     }
 }
 
-// ניווט קדימה ואחורה
+// ניווט קדימה - קורא ערכים מהקלט רק ברגע הלחיצה כדי למנוע אובדן פוקוס מהמקלדת
 function wizardNext() {
-    // שמירת הנתונים מהמסכים שמכילים שדות קלט חופשיים
     if (wizardData.currentStep === 1 && document.getElementById('w-changeTitle')) wizardData.changeTitle = document.getElementById('w-changeTitle').value;
     if (wizardData.currentStep === 2 && document.getElementById('w-origin')) wizardData.originStatus = document.getElementById('w-origin').value;
     if (wizardData.currentStep === 3 && document.getElementById('w-nextStep')) wizardData.nextStep = document.getElementById('w-nextStep').value;
     if (wizardData.currentStep === 4 && document.getElementById('w-why')) wizardData.whyImportant = document.getElementById('w-why').value;
     if (wizardData.currentStep === 5 && document.getElementById('w-learn')) wizardData.whatToLearn = document.getElementById('w-learn').value;
     if (wizardData.currentStep === 6 && document.getElementById('w-duration')) wizardData.duration = parseInt(document.getElementById('w-duration').value) || 21;
-    if (wizardData.currentStep === 10) {
+    if (wizardData.currentStep === 10 && document.getElementById('w-customRecovery')) {
         const customRec = document.getElementById('w-customRecovery').value.trim();
         if(customRec) wizardData.recoveryPlan = customRec;
     }
@@ -258,7 +287,7 @@ function wizardNext() {
         wizardData.currentStep++;
         renderWizardStep();
     } else {
-        // שלב 11 - שמירה סופית והפעלת המחזור
+        // שלב 11 - שמירה סופית והפעלת המחזור (סעיף 8 באפיון)[cite: 1]
         state.hasActiveCycle = true;
         state.changeTitle = wizardData.changeTitle || "שינוי אישי";
         state.stepTitle = wizardData.nextStep || "צעד ראשון";
@@ -267,11 +296,10 @@ function wizardNext() {
         state.todaySuccesses = 0;
         state.cycleSuccesses = 0;
         
-        // שמירה קבועה בבסיס הנתונים המקומי
         saveState();
         updateUI();
         
-        // חזרה אוטומטית למסך הבית הראשי שמציג כעת את התוכנית שנבנתה
+        // חזרה אוטומטית למסך הבית
         switchView('today', document.querySelector('.nav-item'));
         
         // איפוס ה-Wizard לפעם הבאה
@@ -279,43 +307,24 @@ function wizardNext() {
     }
 }
 
+// ניווט אחורה - שומר את הטקסט לפני החזרה שלב
 function wizardBack() {
+    if (wizardData.currentStep === 1 && document.getElementById('w-changeTitle')) wizardData.changeTitle = document.getElementById('w-changeTitle').value;
+    if (wizardData.currentStep === 2 && document.getElementById('w-origin')) wizardData.originStatus = document.getElementById('w-origin').value;
+    if (wizardData.currentStep === 3 && document.getElementById('w-nextStep')) wizardData.nextStep = document.getElementById('w-nextStep').value;
+    if (wizardData.currentStep === 4 && document.getElementById('w-why')) wizardData.whyImportant = document.getElementById('w-why').value;
+    if (wizardData.currentStep === 5 && document.getElementById('w-learn')) wizardData.whatToLearn = document.getElementById('w-learn').value;
+    if (wizardData.currentStep === 6 && document.getElementById('w-duration')) wizardData.duration = parseInt(document.getElementById('w-duration').value) || 21;
+
     if (wizardData.currentStep > 1) {
         wizardData.currentStep--;
         renderWizardStep();
     }
 }
 
-// אתחול ה-Wizard בעת טעינת האפליקציה
-renderWizardStep();
-}
-
-// ניווט בין הטאבים הראשיים
-function switchView(viewId, targetBtn) {
-    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
-    
-    document.getElementById(`view-${viewId}`).classList.add('active');
-    if (targetBtn) targetBtn.classList.add('active');
-}
-
-// הוספת הצלחה מהירה מחוץ ל-Check-in
-function quickAddSuccess() {
-    state.todaySuccesses += 1;
-    state.cycleSuccesses += 1;
-    state.totalSuccesses += 1;
-    saveState();
-    updateUI();
-    showToast();
-}
-
-function showToast() {
-    const toast = document.getElementById('toast');
-    toast.style.display = 'block';
-    setTimeout(() => { toast.style.display = 'none'; }, 2000);
-}
-
-// לוגיקת ה-Check-in היומי
+// =================================================================
+// 4. לוגיקת ה-Check-in היומי (סעיפים 9, 10, 11, 12 באפיון)[cite: 1]
+// =================================================================
 function openCheckin() {
     state.currentCheckinStep = 1;
     state.selectedEmoji = null;
@@ -354,6 +363,24 @@ function nextCheckinStep() {
     }
 }
 
+// הוספת הצלחה מהירה ממסך הבית (סעיף 13 באפיון)[cite: 1]
+function quickAddSuccess() {
+    state.todaySuccesses += 1;
+    state.cycleSuccesses += 1;
+    state.totalSuccesses += 1;
+    saveState();
+    updateUI();
+    showToast();
+}
+
+function showToast() {
+    const toast = document.getElementById('toast');
+    if (toast) {
+        toast.style.display = 'block';
+        setTimeout(() => { toast.style.display = 'none'; }, 2000);
+    }
+}
+
 function saveState() {
     localStorage.setItem('hasActiveCycle', state.hasActiveCycle);
     localStorage.setItem('changeTitle', state.changeTitle);
@@ -365,11 +392,12 @@ function saveState() {
     localStorage.setItem('checkinDone', state.checkinDone);
 }
 
+// רישום ה-Service Worker לעבודה אופליין
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration failed:', err));
     });
 }
 
-// אתחול ראשוני בהרצה
+// אתחול האפליקציה בטעינה הראשונה
 updateUI();
