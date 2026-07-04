@@ -109,7 +109,7 @@
     <div id="view-today" class="view active">
         <div class="header">
             <div>
-                <h2>היי, מירב 💜</h2>
+                <h2>היי, מירב</h2>
                 <div id="cycle-day-subtitle" class="subtitle">ברוכה הבאה לתהליך</div>
             </div>
             <div id="cycle-progress-circle" class="progress-circle-mock">- / -</div>
@@ -197,11 +197,26 @@
     </div>
 
     <!-- 🗺️ MOCK VIEWS FOR NAVIGATION -->
+    <!-- 📋 VIEW: PLAN WIZARD -->
     <div id="view-plan" class="view">
-        <h2>התוכנית שלי</h2>
-        <p class="subtitle" style="margin-bottom: 20px;">כאן תוכלי להגדיר את מחזור השינוי הבא שלך.</p>
-        <!-- כפתור זמני שמדמה יצירת תוכנית ראשונה למטרות בדיקה -->
-        <button class="btn btn-secondary" onclick="simulateCreatePlan()">סמלציה: צרי תוכנית לדוגמה (אלכוהול)</button>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <h2 id="wizard-title">הגדרת מחזור שינוי</h2>
+            <span id="wizard-step-indicator" style="font-weight: bold; color: var(--primary);">שלב 1/11</span>
+        </div>
+        
+        <!-- סרגל פרוגרס קטן עליון בהשראת המוקאפ -->
+        <div id="wizard-progress-bar" style="display: flex; gap: 4px; margin-bottom: 20px;">
+            <!-- ייווצר דינמית על ידי ה-JS -->
+        </div>
+
+        <div class="card" id="wizard-card-content">
+            <!-- התוכן של השלבים יוזרק כאן דינמית -->
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 12px; margin-top: 16px;">
+            <button class="btn btn-outline" id="btn-wizard-back" onclick="wizardBack()">אחורה</button>
+            <button class="btn btn-primary" id="btn-wizard-next" onclick="wizardNext()">הבא</button>
+        </div>
     </div>
     <div id="view-journey" class="view"><h2>הדרך שלי</h2><p class="subtitle">היסטוריית הצלחות ותובנות מצטברות.</p></div>
     <div id="view-review" class="view"><h2>סקירה</h2><p class="subtitle">סיכום 21 ימי מחזור השינוי.</p></div>
