@@ -57,19 +57,237 @@ function updateUI() {
     }
 }
 
-// ניקוי או הזנת סימולציה של תוכנית (לצרכי בדיקה לפני בניית ה-Wizard המלא)
-function simulateCreatePlan() {
-    state.hasActiveCycle = true;
-    state.changeTitle = "להפחית את שתיית האלכוהול";
-    state.stepTitle = "עד פעמיים בשבוע";
-    state.cycleDay = 1;
-    state.checkinDone = false;
-    state.todaySuccesses = 0;
-    state.cycleSuccesses = 0;
+// מחסן האפשרויות המובנה (סעיף 7 באפיון)
+const repository = {
+    steps: [
+        "לבחור מראש את ימי השתייה",
+        "לא לשתות יומיים ברצף",
+        "לא לקבל החלטה על שתייה לפני ארוחת ערב",
+        "להחזיק משקה חלופי בבית (סודה, תה קר)"
+    ],
+    difficulties: ["סוף שבוע", "מפגש משפחתי", "יציאה עם חברים", "עייפות", "לחץ", "שעמום"],
+    strategies: [
+        "כשיש מפגש משפחתי ➔ להחליט מראש אם זה אחד מימי השתייה",
+        "כשאני עייפה ➔ לא לקבל החלטה לפני שאכלתי ארוחת ערב",
+        "למזוג משקה חלופי לכוס יפה מיד כשמגיעים הביתה"
+    ],
+    recovery: [
+        "לחזור לתוכנית בבחירה הבאה",
+        "לא לבטל את שאר השבוע בגלל אירוע אחד",
+        "לא לנסות לפצות בארוחה הבאה",
+        "להזכיר לעצמי שהמחזור הוא ניסוי"
+    ]
+};
+
+// נתונים זמניים שנאספים במהלך מילוי ה-Wizard
+let wizardData = {
+    currentStep: 1,
+    changeTitle: "",
+    originStatus: "",
+    nextStep: "",
+    whyImportant: "",
+    whatToLearn: "",
+    duration: 21,
+    selectedSteps: [],
+    selectedDifficulties: [],
+    selectedStrategies: [],
+    recoveryPlan: ""
+};
+
+// הגדרת השלבים ומבנה ה-Wizard
+function renderWizardStep() {
+    const card = document.getElementById('wizard-card-content');
+    const indicator = document.getElementById('wizard-step-indicator');
+    const bar = document.getElementById('wizard-progress-bar');
+    const btnBack = document.getElementById('btn-wizard-back');
+    const btnNext = document.getElementById('btn-wizard-next');
     
-    saveState();
-    updateUI();
-    switchView('today', document.querySelector('.nav-item'));
+    indicator.innerText = `שלב ${wizardData.currentStep}/11`;
+    btnBack.style.visibility = wizardData.currentStep === 1 ? 'hidden' : 'visible';
+    btnNext.innerText = wizardData.currentStep === 11 ? 'אישור והתחלת המחזור 🎉' : 'הבא';
+
+    // עדכון סרגל שלבים ויזואלי (נקודות)
+    bar.innerHTML = '';
+    for(let i=1; i<=11; i++) {
+        const dot = document.createElement('div');
+        dot.style.flex = "1";
+        dot.style.height = "6px";
+        dot.style.borderRadius = "3px";
+        dot.style.background = i <= wizardData.currentStep ? "var(--primary)" : "var(--border)";
+        bar.appendChild(dot);
+    }
+
+    // הזרקת תוכן מותאם לכל שלב (סעיפים 5, 6, 8 באפיון)
+    switch(wizardData.currentStep) {
+        case 1:
+            document.getElementById('wizard-title').innerText = "מה אני רוצה לשנות?";
+            card.innerHTML = `
+                <p class="subtitle" style="margin-bottom:10px;">נסי למקד במשפט קצר את השינוי שאת רוצה ליצור כעת:</p>
+                <textarea id="w-changeTitle" style="width:100%; height:80px; padding:10px; border-radius:8px; border:1px solid var(--border);" placeholder="לדוגמה: להפחית את שתיית האלכוהול">${wizardData.changeTitle}</textarea>
+            `;
+            break;
+        case 2:
+            document.getElementById('wizard-title').innerText = "איפה אני נמצאת היום?";
+            card.innerHTML = `
+                <p class="subtitle" style="margin-bottom:10px;">הגדרת נקודת המוצא הנוכחית שלך:</p>
+                <textarea id="w-origin" style="width:100%; height:80px; padding:10px; border-radius:8px; border:1px solid var(--border);" placeholder="לדוגמה: שותה כמעט כל ערב בסוף היום">${wizardData.originStatus}</textarea>
+            `;
+            break;
+        case 3:
+            document.getElementById('wizard-title').innerText = "מה הצעד הבא לניסוי?";
+            card.innerHTML = `
+                <p class="subtitle" style="margin-bottom:10px;">לא היעד הסופי, אלא צעד קטן ומעשי שאפשר לנסות כרגע:</p>
+                <input type="text" id="w-nextStep" value="${wizardData.nextStep}" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border);" placeholder="לדוגמה: יום כן - יום לא / עד פעמיים בשבוע">
+            `;
+            break;
+        case 4:
+            document.getElementById('wizard-title').innerText = "למה השינוי חשוב לי?";
+            card.innerHTML = `
+                <p class="subtitle" style="margin-bottom:10px;">טקסט אישי קצר שיזכיר לך את המנוע מאחורי הניסוי:</p>
+                <textarea id="w-why" style="width:100%; height:80px; padding:10px; border-radius:8px; border:1px solid var(--border);">${wizardData.whyImportant}</textarea>
+            `;
+            break;
+        case 5:
+            document.getElementById('wizard-title').innerText = "מה אני רוצה ללמוד?";
+            card.innerHTML = `
+                <p class="subtitle" style="margin-bottom:10px;">מה את רוצה לגלות על עצמך במהלך 21 הימים האלו?</p>
+                <textarea id="w-learn" style="width:100%; height:80px; padding:10px; border-radius:8px; border:1px solid var(--border);" placeholder="לדוגמה: באילו רגעים הצורך עולה והאם משקה חלופי באמת מספק אותי">${wizardData.whatToLearn}</textarea>
+            `;
+            break;
+        case 6:
+            document.getElementById('wizard-title').innerText = "תקופת הניסוי";
+            card.innerHTML = `
+                <p class="subtitle" style="margin-bottom:15px;">מחזור השינוי מוגדר כניסוי תחום בזמן כדי להוריד לחץ.</p>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span>משך הניסוי (ימים):</span>
+                    <input type="number" id="w-duration" value="${wizardData.duration}" style="width:80px; padding:8px; text-align:center; border-radius:8px; border:1px solid var(--border);">
+                </div>
+                <p class="subtitle" style="margin-top:15px; font-size:12px;">ברירת המחדל המומלצת היא 21 יום.</p>
+            `;
+            break;
+        case 7:
+            document.getElementById('wizard-title').innerText = "הצעדים המעשיים שלי";
+            card.innerHTML = `<p class="subtitle" style="margin-bottom:10px;">בחרי צעדים שיעזרו לך ליישם (או הוסיפי אישי):</p>` + 
+                renderCheckboxList(repository.steps, wizardData.selectedSteps, 'selectedSteps') +
+                `<input type="text" placeholder="+ הוספת צעד אישי משלך" onchange="addNewOptionToWizard(this, 'selectedSteps')" style="width:100%; padding:10px; margin-top:10px; border-radius:8px; border:1px dashed var(--primary);">`;
+            break;
+        case 8:
+            document.getElementById('wizard-title').innerText = "מתי צפוי להיות קשה?";
+            card.innerHTML = `<p class="subtitle" style="margin-bottom:10px;">זיהוי מראש של מצבים מאתגרים (אופציונלי):</p>` + 
+                renderCheckboxList(repository.difficulties, wizardData.selectedDifficulties, 'selectedDifficulties') +
+                `<input type="text" placeholder="+ הוספת מצב קשה אישי" onchange="addNewOptionToWizard(this, 'selectedDifficulties')" style="width:100%; padding:10px; margin-top:10px; border-radius:8px; border:1px dashed var(--primary);">`;
+            break;
+        case 9:
+            document.getElementById('wizard-title').innerText = "מה יכול לעזור לי?";
+            card.innerHTML = `<p class="subtitle" style="margin-bottom:10px;">אסטרטגיות למצבים הקשים שסימנת (אופציונלי):</p>` + 
+                renderCheckboxList(repository.strategies, wizardData.selectedStrategies, 'selectedStrategies') +
+                `<input type="text" placeholder="+ הוספת אסטרטגיה אישית" onchange="addNewOptionToWizard(this, 'selectedStrategies')" style="width:100%; padding:10px; margin-top:10px; border-radius:8px; border:1px dashed var(--primary);">`;
+            break;
+        case 10:
+            document.getElementById('wizard-title').innerText = "תוכנית החזרה שלי";
+            card.innerHTML = `<p class="subtitle" style="margin-bottom:10px;">מה יעזור לך להמשיך הלאה אם לא פעלת לפי התוכנית? (בחרי או כתבי):</p>` +
+                renderRadioList(repository.recovery, wizardData.recoveryPlan, 'recoveryPlan') +
+                `<textarea id="w-customRecovery" style="width:100%; height:60px; margin-top:10px; padding:10px; border-radius:8px; border:1px solid var(--border);" placeholder="או כתבי תוכנית חזרה מותאמת אישית">${repository.recovery.includes(wizardData.recoveryPlan) ? '' : wizardData.recoveryPlan}</textarea>`;
+            break;
+        case 11:
+            document.getElementById('wizard-title').innerText = "סיכום ואישור התוכנית";
+            card.innerHTML = `
+                <div style="font-size:14px; display:flex; flex-direction:column; gap:10px;">
+                    <div><strong>השינוי שלי:</strong> ${wizardData.changeTitle}</div>
+                    <div><strong>נקודת מוצא:</strong> ${wizardData.originStatus}</div>
+                    <div><strong>הצעד הבא:</strong> ${wizardData.nextStep}</div>
+                    <div><strong>הצעדים שבחרתי:</strong> ${wizardData.selectedSteps.join(', ') || 'ללא'}</div>
+                    <div><strong>מצבים מאתגרים:</strong> ${wizardData.selectedDifficulties.join(', ') || 'ללא'}</div>
+                    <div><strong>אסטרטגיות:</strong> ${wizardData.selectedStrategies.join(', ') || 'ללא'}</div>
+                    <div><strong>תוכנית החזרה:</strong> ${wizardData.recoveryPlan || 'חזרה בבחירה הבאה'}</div>
+                    <div><strong>מה אלמד:</strong> ${wizardData.whatToLearn}</div>
+                    <div><strong>משך הניסוי:</strong> ${wizardData.duration} ימים</div>
+                </div>
+            `;
+            break;
+    }
+}
+
+// פונקציות עזר לייצור רשימות בחירה
+function renderCheckboxList(items, selectedArray, propertyName) {
+    return `<div class="checkbox-list">` + items.map(item => {
+        const checked = selectedArray.includes(item) ? 'checked' : '';
+        return `<label class="checkbox-item"><input type="checkbox" value="${item}" ${checked} onchange="toggleWizardCheckbox('${propertyName}', '${item}')"> <span>${item}</span></label>`;
+    }).join('') + `</div>`;
+}
+
+function renderRadioList(items, selectedValue, propertyName) {
+    return `<div class="checkbox-list">` + items.map(item => {
+        const checked = selectedValue === item ? 'checked' : '';
+        return `<label class="checkbox-item"><input type="radio" name="wizard-radio" value="${item}" ${checked} onchange="wizardData.recoveryPlan = ' ${item}'.trim()"> <span>${item}</span></label>`;
+    }).join('') + `</div>`;
+}
+
+function toggleWizardCheckbox(property, value) {
+    const idx = wizardData[property].indexOf(value);
+    if(idx > -1) wizardData[property].splice(idx, 1);
+    else wizardData[property].push(value);
+}
+
+function addNewOptionToWizard(inputElement, property) {
+    const val = inputElement.value.trim();
+    if (val) {
+        wizardData[property].push(val);
+        if (property === 'selectedSteps') repository.steps.push(val);
+        if (property === 'selectedDifficulties') repository.difficulties.push(val);
+        if (property === 'selectedStrategies') repository.strategies.push(val);
+        renderWizardStep();
+    }
+}
+
+// ניווט קדימה ואחורה
+function wizardNext() {
+    // שמירת הנתונים מהמסכים שמכילים שדות קלט חופשיים
+    if (wizardData.currentStep === 1 && document.getElementById('w-changeTitle')) wizardData.changeTitle = document.getElementById('w-changeTitle').value;
+    if (wizardData.currentStep === 2 && document.getElementById('w-origin')) wizardData.originStatus = document.getElementById('w-origin').value;
+    if (wizardData.currentStep === 3 && document.getElementById('w-nextStep')) wizardData.nextStep = document.getElementById('w-nextStep').value;
+    if (wizardData.currentStep === 4 && document.getElementById('w-why')) wizardData.whyImportant = document.getElementById('w-why').value;
+    if (wizardData.currentStep === 5 && document.getElementById('w-learn')) wizardData.whatToLearn = document.getElementById('w-learn').value;
+    if (wizardData.currentStep === 6 && document.getElementById('w-duration')) wizardData.duration = parseInt(document.getElementById('w-duration').value) || 21;
+    if (wizardData.currentStep === 10) {
+        const customRec = document.getElementById('w-customRecovery').value.trim();
+        if(customRec) wizardData.recoveryPlan = customRec;
+    }
+
+    if (wizardData.currentStep < 11) {
+        wizardData.currentStep++;
+        renderWizardStep();
+    } else {
+        // שלב 11 - שמירה סופית והפעלת המחזור
+        state.hasActiveCycle = true;
+        state.changeTitle = wizardData.changeTitle || "שינוי אישי";
+        state.stepTitle = wizardData.nextStep || "צעד ראשון";
+        state.cycleDay = 1;
+        state.checkinDone = false;
+        state.todaySuccesses = 0;
+        state.cycleSuccesses = 0;
+        
+        // שמירה קבועה בבסיס הנתונים המקומי
+        saveState();
+        updateUI();
+        
+        // חזרה אוטומטית למסך הבית הראשי שמציג כעת את התוכנית שנבנתה
+        switchView('today', document.querySelector('.nav-item'));
+        
+        // איפוס ה-Wizard לפעם הבאה
+        wizardData.currentStep = 1;
+    }
+}
+
+function wizardBack() {
+    if (wizardData.currentStep > 1) {
+        wizardData.currentStep--;
+        renderWizardStep();
+    }
+}
+
+// אתחול ה-Wizard בעת טעינת האפליקציה
+renderWizardStep();
 }
 
 // ניווט בין הטאבים הראשיים
