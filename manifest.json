@@ -1,0 +1,9 @@
+{
+  "name": "צעד אחר צעד",
+  "short_name": "צעד אחר צעד",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#f7fafc",
+  "theme-color": "#6b46c1",
+  "orientation": "portrait"
+}
