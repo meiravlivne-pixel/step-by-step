@@ -1,5 +1,10 @@
 // ניהול הסטייט של האפליקציה עם שמירה ב-localStorage
 const state = {
+    hasActiveCycle: localStorage.getItem('hasActiveCycle') === 'true',
+    changeTitle: localStorage.getItem('changeTitle') || '',
+    stepTitle: localStorage.getItem('stepTitle') || '',
+    cycleDay: parseInt(localStorage.getItem('cycleDay')) || 1,
+    
     todaySuccesses: parseInt(localStorage.getItem('todaySuccesses')) || 0,
     cycleSuccesses: parseInt(localStorage.getItem('cycleSuccesses')) || 0,
     totalSuccesses: parseInt(localStorage.getItem('totalSuccesses')) || 0,
@@ -8,20 +13,63 @@ const state = {
     selectedEmoji: null
 };
 
-// עדכון התצוגה של המונים במסך הבית
+// עדכון התצוגה של המסכים והמונים
 function updateUI() {
-    document.getElementById('count-today').innerText = state.todaySuccesses;
-    document.getElementById('count-cycle').innerText = state.cycleSuccesses;
-    document.getElementById('count-total').innerText = state.totalSuccesses;
-    
-    const statusEl = document.getElementById('status-checkin');
-    if (state.checkinDone) {
-        statusEl.innerText = "הושלם בהצלחה! ✨";
-        statusEl.style.color = "var(--success)";
+    const emptyStateEl = document.getElementById('empty-active-cycle');
+    const activeContentEl = document.getElementById('active-cycle-content');
+    const subtitleEl = document.getElementById('cycle-day-subtitle');
+    const circleEl = document.getElementById('cycle-progress-circle');
+
+    if (state.hasActiveCycle) {
+        // הצגת תוכן התוכנית והסתרת הדף הריק
+        emptyStateEl.style.display = 'none';
+        activeContentEl.style.display = 'block';
+        
+        // עדכון טקסטים
+        subtitleEl.innerText = `יום ${state.cycleDay} מתוך 21`;
+        circleEl.innerText = `${state.cycleDay}/21`;
+        circleEl.classList.add('active');
+        
+        document.getElementById('display-change-title').innerText = state.changeTitle;
+        document.getElementById('display-step-title').innerText = state.stepTitle;
+        
+        // עדכון מונים
+        document.getElementById('count-today').innerText = state.todaySuccesses;
+        document.getElementById('count-cycle').innerText = state.cycleSuccesses;
+        document.getElementById('count-total').innerText = state.totalSuccesses;
+        
+        const statusEl = document.getElementById('status-checkin');
+        if (state.checkinDone) {
+            statusEl.innerText = "הושלם בהצלחה! ✨";
+            statusEl.style.color = "var(--success)";
+        } else {
+            statusEl.innerText = "טרם בוצע";
+            statusEl.style.color = "var(--text-muted)";
+        }
     } else {
-        statusEl.innerText = "טרם בוצע";
-        statusEl.style.color = "var(--text-muted)";
+        // הצגת דף ריק כאשר אין תוכנית
+        emptyStateEl.style.display = 'block';
+        activeContentEl.style.display = 'none';
+        
+        subtitleEl.innerText = "ברוכה הבאה לתהליך";
+        circleEl.innerText = "- / -";
+        circleEl.classList.remove('active');
     }
+}
+
+// ניקוי או הזנת סימולציה של תוכנית (לצרכי בדיקה לפני בניית ה-Wizard המלא)
+function simulateCreatePlan() {
+    state.hasActiveCycle = true;
+    state.changeTitle = "להפחית את שתיית האלכוהול";
+    state.stepTitle = "עד פעמיים בשבוע";
+    state.cycleDay = 1;
+    state.checkinDone = false;
+    state.todaySuccesses = 0;
+    state.cycleSuccesses = 0;
+    
+    saveState();
+    updateUI();
+    switchView('today', document.querySelector('.nav-item'));
 }
 
 // ניווט בין הטאבים הראשיים
@@ -58,9 +106,7 @@ function openCheckin() {
     document.getElementById('btn-next-checkin').disabled = true;
     document.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('selected'));
     
-    // ניקוי תיבות הסימון
     document.querySelectorAll('#checkin-step2 input').forEach(i => i.checked = false);
-    
     switchView('checkin', null);
 }
 
@@ -77,7 +123,6 @@ function nextCheckinStep() {
         document.getElementById('checkin-step2').style.display = 'block';
         document.getElementById('btn-next-checkin').innerText = 'סיום שמירה';
     } else if (state.currentCheckinStep === 2) {
-        // ספירת כמות התיבות שסומנו כהצלחה
         const checkedBoxes = document.querySelectorAll('#checkin-step2 input:checked').length;
         
         state.todaySuccesses += checkedBoxes;
@@ -92,13 +137,16 @@ function nextCheckinStep() {
 }
 
 function saveState() {
+    localStorage.setItem('hasActiveCycle', state.hasActiveCycle);
+    localStorage.setItem('changeTitle', state.changeTitle);
+    localStorage.setItem('stepTitle', state.stepTitle);
+    localStorage.setItem('cycleDay', state.cycleDay);
     localStorage.setItem('todaySuccesses', state.todaySuccesses);
     localStorage.setItem('cycleSuccesses', state.cycleSuccesses);
     localStorage.setItem('totalSuccesses', state.totalSuccesses);
     localStorage.setItem('checkinDone', state.checkinDone);
 }
 
-// רישום ה-Service Worker עבור ה-PWA
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration failed:', err));
