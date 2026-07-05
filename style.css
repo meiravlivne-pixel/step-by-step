@@ -337,3 +337,142 @@ body {
     font-size: 0.8rem;
     color: var(--text-light);
 }
+/* הוסיפי בסוף קובץ ה-style.css שלך */
+
+.home-container {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* כרטיס המחזור הפעיל */
+.cycle-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.cycle-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.cycle-badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #4A5568;
+    background-color: #EDF2F7;
+    padding: 4px 8px;
+    border-radius: 12px;
+}
+
+.cycle-days-left {
+    font-size: 0.8rem;
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.cycle-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+}
+
+.progress-bar-container {
+    width: 100%;
+    height: 6px;
+    background-color: #E2E8F0;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background-color: var(--primary-color);
+    border-radius: 3px;
+    transition: width 0.5s ease;
+}
+
+/* כפתור ה-Check-in הראשי המעוגל והסגול */
+.main-checkin-btn {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    text-align: right;
+    box-shadow: 0 4px 10px rgba(142, 124, 195, 0.25);
+}
+
+.checkin-btn-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.checkin-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+.checkin-subtitle {
+    font-size: 0.85rem;
+    opacity: 0.9;
+}
+
+.checkin-icon {
+    font-size: 1.6rem;
+}
+
+/* שורת פעולות מהירות (שני כפתורים זה לצד זה) */
+.quick-actions-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.quick-action-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 16px;
+    text-align: right;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.quick-action-card .action-icon {
+    font-size: 1.4rem;
+    margin-bottom: 4px;
+}
+
+.quick-action-card h4 {
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+
+.quick-action-card p {
+    font-size: 0.75rem;
+    color: var(--text-light);
+}
+
+/* כרטיס מצב ריק */
+.empty-state-card {
+    background-color: var(--card-bg);
+    border: 1px dashed #CBD5E0;
+    border-radius: 16px;
+    padding: 30px 20px;
+    text-align: center;
+    color: var(--text-light);
+}
