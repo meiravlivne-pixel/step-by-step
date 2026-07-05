@@ -43,13 +43,100 @@
             </div>
 
             <!-- כפתור Check-in יומי מרכזי -->
-            <button id="home-checkin-btn" class="main-checkin-btn">
-                <div class="checkin-btn-content">
-                    <span class="checkin-title">לתעד רגע</span>
-                    <span class="checkin-subtitle">יומי / Check-in</span>
-                </div>
-                <span class="checkin-icon">📅</span>
-            </button>
+<div id="checkin-overlay" class="wizard-container">
+    <header class="wizard-header">
+        <button id="checkin-close-btn" class="icon-btn">✕</button>
+        <span id="checkin-step-title">תיעוד יומי - שלב 1 מתוך 3</span>
+        <div style="width: 24px;"></div>
+    </header>
+
+    <div class="wizard-steps-contents" style="margin-top: 20px;">
+        
+        <!-- שלב 1: שאלה ויזואלית מבוססת אימוג'ים -->
+        <div class="checkin-page active" data-cstep="1">
+            <h3 class="step-question">איך הלך לך היום?</h3>
+            <p class="step-instruction">בחירה ויזואלית אינטואיטיבית</p>
+            <div class="emoji-mood-container">
+                <button class="mood-btn" data-mood="easy">
+                    <span class="mood-emoji">🙂</span>
+                    <span class="mood-text">הלך לי בקלות יחסית</span>
+                </button>
+                <button class="mood-btn" data-mood="mixed">
+                    <span class="mood-emoji">🌤️</span>
+                    <span class="mood-text">היו הצלחות וגם קשיים</span>
+                </button>
+                <button class="mood-btn" data-mood="hard">
+                    <span class="mood-emoji">🌧️</span>
+                    <span class="mood-text">היה לי קשה</span>
+                </button>
+                <button class="mood-btn" data-mood="irrelevant">
+                    <span class="mood-emoji">➖</span>
+                    <span class="mood-text">השינוי לא היה רלוונטי היום</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- שלב 2: מה קרה היום? (בחירה מרובה) -->
+        <div class="checkin-page" data-cstep="2">
+            <h3 class="step-question">מה קרה היום?</h3>
+            <p class="step-instruction">ניתן לבחור כמה אפשרויות מהרשימה</p>
+            <div class="checkbox-options-list" id="what-happened-list">
+                <!-- האפשרויות ייווצרו דינמית או סטטית בקוד -->
+                <label class="custom-checkbox"><input type="checkbox" value="פעלתי לפי התוכנית"> <span>פעלתי לפי התוכנית</span></label>
+                <label class="custom-checkbox"><input type="checkbox" value="פעלתי לפי חלק מהתוכנית"> <span>פעלתי לפי חלק מהתוכנית</span></label>
+                <label class="custom-checkbox"><input type="checkbox" value="עשיתי משהו אחרת ממה שתכננתי"> <span>עשיתי משהו אחרת ממה שתכננתי</span></label>
+                <label class="custom-checkbox"><input type="checkbox" value="הופיע דחף"> <span>הופיע דחף</span></label>
+                <label class="custom-checkbox"><input type="checkbox" value="עצרתי לפני שפעלתי"> <span>עצרתי לפני שפעלתי</span></label>
+                <label class="custom-checkbox"><input type="checkbox" value="בחרתי באופן מודע"> <span>בחרתי באופן מודע</span></label>
+                <label class="custom-checkbox"><input type="checkbox" value="חזרתי לתוכנית אחרי קושי"> <span>חזרתי לתוכנית אחרי קושי</span></label>
+                <label class="custom-checkbox"><input type="checkbox" value="גיליתי משהו שעוזר לי"> <span>גיליתי משהו שעוזר לי</span></label>
+                <label class="custom-checkbox"><input type="checkbox" value="זיהיתי משהו שמקשה עליי"> <span>זיהיתי משהו שמקשה עליי</span></label>
+                <label class="custom-checkbox"><input type="checkbox" value="לא היה משהו מיוחד היום"> <span>לא היה משהו מיוחד היום</span></label>
+                <label class="custom-checkbox"><input type="checkbox" value="משהו אחר"> <span>משהו אחר</span></label>
+            </div>
+            <div class="input-group" style="margin-top: 12px;">
+                <input type="text" id="custom-happened-text" placeholder="פירוט נוסף בטקסט (אופציונלי)" style="text-align: right; direction: rtl;">
+            </div>
+        </div>
+
+        <!-- שלב 3: פירוק להצלחות קטנות (לב האפליקציה) -->
+        <div class="checkin-page" data-cstep="3">
+            <h3 class="step-question">מה עשית היום שעזר לך בתהליך השינוי?</h3>
+            <p class="step-instruction">כל הצלחה נספרת ומצטברת לאורך זמן! (בחירה מרובה)</p>
+            <div class="checkbox-options-list successes-list" id="successes-chips-list">
+                <!-- רשימת ההצלחות מהאפיון -->
+                <label class="custom-checkbox success-chip"><input type="checkbox" value="תכננתי מראש"> <span>תכננתי מראש</span></label>
+                <label class="custom-checkbox success-chip"><input type="checkbox" value="שמתי לב למה שקורה"> <span>שמתי לב למה שקורה</span></label>
+                <label class="custom-checkbox success-chip"><input type="checkbox" value="זיהיתי דחף"> <span>זיהיתי דחף</span></label>
+                <label class="custom-checkbox success-chip"><input type="checkbox" value="עצרתי לפני שפעלתי"> <span>עצרתי לפני שפעלתי</span></label>
+                <label class="custom-checkbox success-chip"><input type="checkbox" value="עשיתי בחירה מודעת"> <span>עשיתי בחירה מודעת</span></label>
+                <label class="custom-checkbox success-chip"><input type="checkbox" value="פעלתי לפי התוכנית"> <span>פעלתי לפי התוכנית</span></label>
+                <label class="custom-checkbox success-chip"><input type="checkbox" value="פעלתי לפי חלק מהתוכנית"> <span>פעלתי לפי חלק מהתוכנית</span></label>
+                <label class="custom-checkbox success-chip"><input type="checkbox" value="עשיתי משהו קצת אחרת מהרגיל"> <span>עשיתי משהו קצת אחרת מהרגיל</span></label>
+                <label class="custom-checkbox success-chip"><input type="checkbox" value="השתמשתי באסטרטגיה שהכנתי"> <span>השתמשתי באסטרטגיה שהכנתי</span></label>
+                <label class="custom-checkbox success-chip"><input type="checkbox" value="התמודדתי עם מצב קשה"> <span>השתמשתי באסטרטגיה שהכנתי</span></label>
+                <label class="custom-checkbox success-chip"><input type="checkbox" value="עצרתי רצף שלא רציתי להמשיך"> <span>עצרתי רצף שלא רציתי להמשיך</span></label>
+                <label class="custom-checkbox success-chip"><input type="checkbox" value="חזרתי לתוכנית בבחירה הבאה"> <span>חזרתי לתוכנית בבחירה הבאה</span></label>
+                <label class="custom-checkbox success-chip"><input type="checkbox" value="לא ויתרתי על כל היום בגלל בחירה אחת"> <span>לא ויתרתי על כל היום בגלל בחירה אחת</span></label>
+                <label class="custom-checkbox success-chip"><input type="checkbox" value="למדתי משהו חדש על עצמי"> <span>למדתי משהו חדש על עצמי</span></label>
+                <label class="custom-checkbox success-chip"><input type="checkbox" value="שיניתי את התוכנית כדי שתהיה מציאותית יותר"> <span>שיניתי את התוכנית כדי שתהיה מציאותית יותר</span></label>
+                <label class="custom-checkbox success-chip"><input type="checkbox" value="דיברתי אל עצמי בצורה מועילה יותר"> <span>דיברתי אל עצמי בצורה מועילה יותר</span></label>
+                <label class="custom-checkbox success-chip"><input type="checkbox" value="ביקשתי עזרה"> <span>ביקשתי עזרה</span></label>
+                <label class="custom-checkbox success-chip"><input type="checkbox" value="המשכתי בתהליך גם כשהיה קשה"> <span>המשכתי בתהליך גם כשהיה קשה</span></label>
+            </div>
+            <div class="input-group" style="margin-top: 12px; display: flex; flex-direction: row; gap: 8px;">
+                <input type="text" id="input-custom-success" placeholder="הוספת הצלחה אישית משלך..." style="text-align: right; direction: rtl;">
+                <button type="button" id="btn-add-custom-success" style="background: var(--primary-color); color: white; border: none; padding: 0 16px; border-radius: 12px; cursor: pointer;">+</button>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="wizard-footer" style="flex-direction: row; gap: 12px;">
+        <button id="checkin-back-btn" class="shortcut-btn" style="flex: 1; margin: 0; padding: 14px;">חזרה</button>
+        <button id="checkin-next-btn" class="wizard-primary-btn" style="flex: 2; padding: 14px;">המשך</button>
+    </div>
+</div>
 
             <!-- פעולות מהירות בזמן אמת (שני כפתורים בשורה) -->
             <div class="quick-actions-row">
