@@ -1,12 +1,13 @@
 :root {
-    --bg-color: #F7F9FC;
-    --primary-color: #8E7CC3; /* הסגול הראשי מהעיצוב שלך */
-    --primary-light: #EADCF8;
-    --text-color: #333333;
-    --text-light: #666666;
+    --bg-color: #F6F5FB;       /* הרקע המובייל הבהיר והנקי מהעיצוב */
+    --primary-color: #9C8EB9;  /* הסגול הראשי והעדין שלך */
+    --primary-light: #EBE7F5; /* סגול בהיר רקע לכפתורים ומדדים */
+    --text-color: #2D3748;
+    --text-light: #718096;
     --card-bg: #FFFFFF;
     --nav-bg: #FFFFFF;
     --border-color: #E2E8F0;
+    --accent-impulse: #EDF2F7; /* רקע ניטרלי לכלים */
 }
 
 * {
@@ -14,7 +15,7 @@
     margin: 0;
     padding: 0;
     -webkit-tap-highlight-color: transparent;
-    user-select: none; /* מניעת בחירת טקסט למראה של אפליקציה */
+    user-select: none;
 }
 
 body {
@@ -32,7 +33,7 @@ body {
     flex: 1;
     position: relative;
     overflow-y: auto;
-    padding-bottom: 70px; /* מרווח בשביל הניווט התחתון */
+    padding: 16px 16px 85px 16px; /* מרווח תחתון מוגדל לניווט */
 }
 
 /* הגדרות בסיס לכל מסך */
@@ -40,8 +41,6 @@ body {
     display: none;
     flex-direction: column;
     width: 100%;
-    min-height: 100%;
-    padding: 16px;
 }
 
 .app-screen.active {
@@ -53,11 +52,11 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 0 24px 0;
+    padding: 12px 0 20px 0;
 }
 
 .screen-header h1 {
-    font-size: 1.3rem;
+    font-size: 1.25rem;
     font-weight: 700;
     color: var(--text-color);
 }
@@ -65,18 +64,26 @@ body {
 .icon-btn {
     background: none;
     border: none;
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     cursor: pointer;
+    color: var(--text-light);
 }
 
 /* תוכן המסך */
 .screen-content {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.welcome-box {
+    margin-bottom: 24px;
 }
 
 .welcome-box h2 {
-    font-size: 1.5rem;
-    margin-bottom: 4px;
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 6px;
 }
 
 .welcome-box p {
@@ -84,20 +91,181 @@ body {
     font-size: 0.95rem;
 }
 
-/* שורת ניווט תחתונה */
+/* ==========================================
+   עיצוב מסך הבית ("היום") החדש
+   ========================================== */
+.home-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* כרטיס מחזור פעיל */
+.cycle-card {
+    background-color: var(--card-bg);
+    border-radius: 20px;
+    padding: 24px 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.015);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.cycle-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.cycle-badge {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-light);
+}
+
+.cycle-days-left {
+    font-size: 0.85rem;
+    color: var(--primary-color);
+    font-weight: 700;
+    background-color: var(--primary-light);
+    padding: 4px 12px;
+    border-radius: 20px;
+}
+
+.cycle-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: var(--text-color);
+}
+
+.progress-bar-container {
+    width: 100%;
+    height: 8px;
+    background-color: #EDF2F7;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background-color: #A3BF95; /* ירוק עדין לצמיחה כמו במוקאפ לענף הקטן */
+    border-radius: 4px;
+    transition: width 0.6s cubic-bezier(0.1, 1, 0.1, 1);
+}
+
+/* כפתור ה-Check-in המרכזי (הסגול הבולט מהמוקאפ) */
+.main-checkin-btn {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 24px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    text-align: right;
+    box-shadow: 0 6px 16px rgba(156, 142, 185, 0.25);
+    transition: transform 0.1s ease;
+}
+
+.main-checkin-btn:active {
+    transform: scale(0.98);
+}
+
+.checkin-btn-content {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.checkin-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.checkin-subtitle {
+    font-size: 0.85rem;
+    opacity: 0.85;
+}
+
+.checkin-icon {
+    font-size: 1.8rem;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 10px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* שורת פעולות מהירות */
+.quick-actions-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.quick-action-card {
+    background-color: var(--card-bg);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    border-radius: 20px;
+    padding: 20px 16px;
+    text-align: right;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.01);
+}
+
+.quick-action-card:active {
+    background-color: #FAFAFA;
+}
+
+.quick-action-card .action-icon {
+    font-size: 1.6rem;
+    margin-bottom: 4px;
+}
+
+.quick-action-card h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.quick-action-card p {
+    font-size: 0.8rem;
+    color: var(--text-light);
+}
+
+/* מצב ריק */
+.empty-state-card {
+    background-color: var(--card-bg);
+    border: 2px dashed #CBD5E0;
+    border-radius: 20px;
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--text-light);
+}
+
+/* ==========================================
+   עיצוב שורת הניווט התחתונה (BOTTOM NAV)
+   ========================================== */
 #bottom-nav {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    height: 65px;
+    height: 70px;
     background-color: var(--nav-bg);
     border-top: 1px solid var(--border-color);
     display: flex;
     justify-content: space-around;
     align-items: center;
     z-index: 1000;
-    padding-bottom: env(safe-area-inset-bottom); /* תמיכה באייפונים חדשים */
+    padding-bottom: env(safe-area-inset-bottom);
 }
 
 .nav-item {
@@ -112,23 +280,25 @@ body {
     color: var(--text-light);
     cursor: pointer;
     gap: 4px;
+    transition: color 0.2s ease;
 }
 
 .nav-icon {
-    font-size: 1.2rem;
+    font-size: 1.3rem;
 }
 
 .nav-label {
     font-size: 0.75rem;
-    font-weight: 500;
+    font-weight: 600;
 }
 
-/* מצב פעיל בניווט */
 .nav-item.active {
     color: var(--primary-color);
 }
-/* הוסיפי בסוף קובץ ה-style.css שלך */
 
+/* ==========================================
+   עיצוב ה-WIZARD
+   ========================================== */
 .wizard-container {
     position: fixed;
     top: 0;
@@ -137,13 +307,13 @@ body {
     bottom: 0;
     background-color: var(--bg-color);
     z-index: 2000;
-    display: none; /* מוסתר כברירת מחדל */
+    display: none;
     flex-direction: column;
     padding: 16px;
 }
 
 .wizard-container.active {
-    display: flex; /* מוצג כשהוא פעיל */
+    display: flex;
 }
 
 .wizard-header {
@@ -154,7 +324,6 @@ body {
     font-weight: 600;
 }
 
-/* נקודות התקדמות */
 .wizard-progress-dots {
     display: flex;
     justify-content: center;
@@ -163,19 +332,18 @@ body {
 }
 
 .wizard-progress-dots .dot {
-    width: 10px;
-    height: 10px;
+    width: 9px;
+    height: 9px;
     border-radius: 50%;
-    background-color: #D3CCE3;
+    background-color: #E2E8F0;
     transition: all 0.3s ease;
 }
 
 .wizard-progress-dots .dot.active {
     background-color: var(--primary-color);
-    transform: scale(1.2);
+    transform: scale(1.3);
 }
 
-/* דפי השלבים */
 .wizard-steps-contents {
     flex: 1;
     position: relative;
@@ -193,7 +361,7 @@ body {
 }
 
 .step-question {
-    font-size: 1.4rem;
+    font-size: 1.45rem;
     font-weight: 700;
     margin-bottom: 8px;
     text-align: center;
@@ -206,49 +374,50 @@ body {
     text-align: center;
 }
 
-/* שדות קלט */
 .input-group {
     position: relative;
     background: var(--card-bg);
     border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 16px;
+    border-radius: 16px;
+    padding: 18px;
     display: flex;
     flex-direction: column;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.01);
 }
 
 .input-group input, .input-group textarea {
     border: none;
     outline: none;
     font-family: inherit;
-    font-size: 1.05rem;
+    font-size: 1.1rem;
     width: 100%;
     resize: none;
     color: var(--text-color);
+    background: transparent;
 }
 
 .char-counter {
     align-self: flex-end;
-    font-size: 0.75rem;
-    color: #A0AEC0;
+    font-size: 0.8rem;
+    color: var(--text-light);
     margin-top: 8px;
 }
 
-/* כרטיסי עזר (טיפים וקיצורים) */
 .tip-box {
     margin-top: 24px;
-    background-color: #F3F0FC;
-    border-radius: 12px;
+    background-color: var(--primary-light);
+    border-radius: 16px;
     padding: 16px;
     display: flex;
     gap: 12px;
     align-items: flex-start;
     line-height: 1.4;
     font-size: 0.9rem;
+    color: #4A4068;
 }
 
 .tip-icon {
-    font-size: 1.2rem;
+    font-size: 1.3rem;
 }
 
 .shortcut-box {
@@ -259,15 +428,15 @@ body {
 .shortcut-title {
     font-size: 0.85rem;
     color: var(--text-light);
-    margin-bottom: 10px;
+    margin-bottom: 12px;
 }
 
 .shortcut-btn {
     background-color: var(--card-bg);
     border: 1px solid var(--primary-color);
     color: var(--primary-color);
-    padding: 10px 20px;
-    border-radius: 20px;
+    padding: 12px 24px;
+    border-radius: 24px;
     font-family: inherit;
     font-weight: 600;
     cursor: pointer;
@@ -285,32 +454,32 @@ body {
 .duration-display {
     background-color: var(--primary-light);
     color: var(--primary-color);
-    width: 120px;
-    height: 120px;
+    width: 130px;
+    height: 130px;
     border-radius: 50%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 10px rgba(156, 142, 185, 0.1);
 }
 
 .days-number {
-    font-size: 2.5rem;
+    font-size: 2.8rem;
     font-weight: 700;
 }
 
 .days-label {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     font-weight: 600;
 }
 
 .date-range-info {
-    font-size: 0.95rem;
+    font-size: 1rem;
     color: var(--text-light);
 }
 
-/* חלק תחתון של ה-Wizard */
 .wizard-footer {
     padding: 16px 0 env(safe-area-inset-bottom) 0;
     display: flex;
@@ -324,155 +493,16 @@ body {
     background-color: var(--primary-color);
     color: white;
     border: none;
-    padding: 14px;
-    border-radius: 12px;
+    padding: 16px;
+    border-radius: 16px;
     font-family: inherit;
     font-size: 1.1rem;
     font-weight: 600;
     cursor: pointer;
-    box-shadow: 0 4px 6px rgba(142, 124, 195, 0.2);
+    box-shadow: 0 4px 12px rgba(156, 142, 185, 0.2);
 }
 
 .wizard-footer-note {
     font-size: 0.8rem;
-    color: var(--text-light);
-}
-/* הוסיפי בסוף קובץ ה-style.css שלך */
-
-.home-container {
-    margin-top: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-/* כרטיס המחזור הפעיל */
-.cycle-card {
-    background-color: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 16px;
-    padding: 20px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-}
-
-.cycle-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-}
-
-.cycle-badge {
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: #4A5568;
-    background-color: #EDF2F7;
-    padding: 4px 8px;
-    border-radius: 12px;
-}
-
-.cycle-days-left {
-    font-size: 0.8rem;
-    color: var(--primary-color);
-    font-weight: 600;
-}
-
-.cycle-title {
-    font-size: 1.2rem;
-    font-weight: 700;
-    margin-bottom: 16px;
-}
-
-.progress-bar-container {
-    width: 100%;
-    height: 6px;
-    background-color: #E2E8F0;
-    border-radius: 3px;
-    overflow: hidden;
-}
-
-.progress-bar-fill {
-    height: 100%;
-    background-color: var(--primary-color);
-    border-radius: 3px;
-    transition: width 0.5s ease;
-}
-
-/* כפתור ה-Check-in הראשי המעוגל והסגול */
-.main-checkin-btn {
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    border-radius: 16px;
-    padding: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    cursor: pointer;
-    text-align: right;
-    box-shadow: 0 4px 10px rgba(142, 124, 195, 0.25);
-}
-
-.checkin-btn-content {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.checkin-title {
-    font-size: 1.15rem;
-    font-weight: 700;
-}
-
-.checkin-subtitle {
-    font-size: 0.85rem;
-    opacity: 0.9;
-}
-
-.checkin-icon {
-    font-size: 1.6rem;
-}
-
-/* שורת פעולות מהירות (שני כפתורים זה לצד זה) */
-.quick-actions-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-}
-
-.quick-action-card {
-    background-color: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 16px;
-    padding: 16px;
-    text-align: right;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.quick-action-card .action-icon {
-    font-size: 1.4rem;
-    margin-bottom: 4px;
-}
-
-.quick-action-card h4 {
-    font-size: 0.95rem;
-    font-weight: 700;
-}
-
-.quick-action-card p {
-    font-size: 0.75rem;
-    color: var(--text-light);
-}
-
-/* כרטיס מצב ריק */
-.empty-state-card {
-    background-color: var(--card-bg);
-    border: 1px dashed #CBD5E0;
-    border-radius: 16px;
-    padding: 30px 20px;
-    text-align: center;
     color: var(--text-light);
 }
