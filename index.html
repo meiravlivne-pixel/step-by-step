@@ -12,17 +12,70 @@
     <main id="app-container">
         
         <!-- מסך 1: היום -->
-        <section id="screen-today" class="app-screen active">
-            <header class="screen-header">
-                <button class="icon-btn">🔔</button>
-                <h1>היום</h1>
-                <button class="icon-btn">⚙️</button>
-            </header>
-            <div class="screen-content">
-                <div class="welcome-box">
-                    <h2>היי מירב 👋</h2>
-                    <p>איך את רוצה להתקדם היום?</p>
+<section id="screen-today" class="app-screen active">
+    <header class="screen-header">
+        <button class="icon-btn">🔔</button>
+        <h1>היום</h1>
+        <button class="icon-btn">⚙️</button>
+    </header>
+    
+    <div class="screen-content">
+        <!-- הודעת ברכה -->
+        <div class="welcome-box">
+            <h2>היי מירב 👋</h2>
+            <p>איך את רוצה להתקדם היום?</p>
+        </div>
+
+        <!-- מצב א': כשיש מחזור פעיל (יוצג דינמית מה-JS) -->
+        <div id="active-cycle-view" class="home-container">
+            <!-- כרטיס מחזור פעיל -->
+            <div class="cycle-card">
+                <div class="cycle-card-header">
+                    <span class="cycle-badge">מחזור פעיל</span>
+                    <span id="home-cycle-days" class="cycle-days-left">יום 1 מתוך 21</span>
                 </div>
+                <h3 id="home-cycle-title" class="cycle-title">טוען שינוי...</h3>
+                
+                <!-- מד התקדמות ויזואלי קטן -->
+                <div class="progress-bar-container">
+                    <div id="home-cycle-progress-bar" class="progress-bar-fill" style="width: 5%;"></div>
+                </div>
+            </div>
+
+            <!-- כפתור Check-in יומי מרכזי -->
+            <button id="home-checkin-btn" class="main-checkin-btn">
+                <div class="checkin-btn-content">
+                    <span class="checkin-title">לתעד רגע</span>
+                    <span class="checkin-subtitle">יומי / Check-in</span>
+                </div>
+                <span class="checkin-icon">📅</span>
+            </button>
+
+            <!-- פעולות מהירות בזמן אמת (שני כפתורים בשורה) -->
+            <div class="quick-actions-row">
+                <button class="quick-action-card impulse">
+                    <span class="action-icon">🌊</span>
+                    <h4>יש לי דחף עכשיו</h4>
+                    <p>כלים לעכשיו</p>
+                </button>
+                <button class="quick-action-card setback">
+                    <span class="action-icon">🔄</span>
+                    <h4>קרה משהו שלא רציתי</h4>
+                    <p>איך לחזור לתוכנית</p>
+                </button>
+            </div>
+        </div>
+
+        <!-- מצב ב': כשאין מחזור פעיל -->
+        <div id="empty-cycle-view" class="home-container" style="display: none;">
+            <div class="empty-state-card">
+                <p>אין לך מחזור שינוי פעיל כרגע.</p>
+                <button id="home-start-wizard-btn" class="wizard-primary-btn" style="margin-top: 16px;">הגדלת מחזור חדש</button>
+            </div>
+        </div>
+
+    </div>
+</section>
                 <!-- כאן ייכנס כרטיס המחזור הפעיל וכפתור ה-Check-in -->
             </div>
         </section>
