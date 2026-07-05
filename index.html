@@ -2,231 +2,81 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>צעד אחר צעד</title>
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#6b46c1">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <style>
-        :root {
-            --primary: #6b46c1;
-            --primary-light: #f3e8ff;
-            --success: #2f855a;
-            --success-light: #f0fff4;
-            --bg: #f7fafc;
-            --card-bg: #ffffff;
-            --text: #2d3748;
-            --text-muted: #718096;
-            --border: #e2e8f0;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
-        body { background-color: var(--bg); color: var(--text); padding-bottom: 70px; font-size: 16px; }
-
-        /* Navigation */
-        .bottom-nav {
-            position: fixed; bottom: 0; left: 0; right: 0; height: 65px;
-            background: var(--card-bg); border-top: 1px solid var(--border);
-            display: flex; justify-content: space-around; align-items: center; z-index: 1000;
-        }
-        .nav-item {
-            display: flex; flex-direction: column; align-items: center;
-            background: none; border: none; color: var(--text-muted); cursor: pointer; flex: 1;
-        }
-        .nav-item.active { color: var(--primary); font-weight: bold; }
-        .nav-item span { font-size: 12px; margin-top: 4px; }
-
-        /* Views */
-        .view { display: none; padding: 20px; max-width: 500px; margin: 0 auto; }
-        .view.active { display: block; }
-
-        /* Components */
-        .card {
-            background: var(--card-bg); border-radius: 16px; padding: 16px;
-            margin-bottom: 16px; border: 1px solid var(--border);
-        }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .progress-circle-mock {
-            width: 50px; height: 50px; border-radius: 50%;
-            border: 4px solid var(--border); display: flex; align-items: center; justify-content: center;
-            font-size: 12px; color: var(--text-muted); font-weight: bold;
-        }
-        .progress-circle-mock.active {
-            border-color: var(--success);
-            color: var(--success);
-        }
-        h2 { font-size: 20px; margin-bottom: 8px; color: var(--text); }
-        .subtitle { font-size: 14px; color: var(--text-muted); }
-        
-        .stat-line { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px dashed var(--border); }
-        .stat-line:last-child { border-bottom: none; }
-        
-        .btn {
-            display: block; width: 100%; padding: 12px; border-radius: 12px;
-            border: none; font-size: 16px; font-weight: bold; cursor: pointer; text-align: center;
-        }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-secondary { background: var(--primary-light); color: var(--primary); }
-        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
-        
-        .quick-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
-        
-        /* Empty State */
-        .empty-state {
-            text-align: center; padding: 40px 20px; color: var(--text-muted);
-        }
-        .empty-state .icon { font-size: 48px; margin-bottom: 16px; display: block; }
-
-        /* Check-in Styles */
-        .emoji-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 16px 0; }
-        .emoji-btn {
-            background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px;
-            padding: 12px 4px; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px;
-        }
-        .emoji-btn.selected { border-color: var(--primary); background: var(--primary-light); }
-        .emoji-btn .icon { font-size: 24px; }
-        .emoji-btn .lbl { font-size: 11px; color: var(--text); }
-
-        .checkbox-list { display: flex; flex-direction: column; gap: 10px; margin: 16px 0; }
-        .checkbox-item {
-            display: flex; align-items: center; padding: 12px;
-            background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; cursor: pointer;
-        }
-        .checkbox-item input { margin-left: 10px; transform: scale(1.2); }
-        
-        .toast {
-            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-            background: var(--text); color: white; padding: 12px 24px; border-radius: 30px;
-            font-size: 14px; z-index: 2000; display: none;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>צועדת</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div id="toast" class="toast">הצלחה נשמרה! 🎉</div>
-
-    <!-- 🟢 VIEW: TODAY -->
-    <div id="view-today" class="view active">
-        <div class="header">
-            <div>
-                <h2>היי, מירב</h2>
-                <div id="cycle-day-subtitle" class="subtitle">ברוכה הבאה לתהליך</div>
-            </div>
-            <div id="cycle-progress-circle" class="progress-circle-mock">- / -</div>
-        </div>
-
-        <!-- תצוגה כאשר אין תוכנית פעילה (דף ראשי ריק) -->
-        <div id="empty-active-cycle" class="empty-state">
-            <span class="icon">🌱</span>
-            <p style="margin-bottom: 20px; font-size: 16px;">טרם הגדרת מחזור שינוי פעיל. שינויים גדולים מתחילים בצעדים קטנים.</p>
-            <button class="btn btn-primary" onclick="switchView('plan', document.querySelectorAll('.nav-item')[1])">צרי את התוכנית הראשונה שלך</button>
-        </div>
-
-        <!-- תצוגה כאשר יש תוכנית פעילה (מוסתר כברירת מחדל) -->
-        <div id="active-cycle-content" style="display: none;">
-            <div class="card">
-                <div class="subtitle">השינוי שלי</div>
-                <h3 id="display-change-title" style="margin: 4px 0 12px 0;">-</h3>
-                <div class="subtitle">הצעד שלי עכשיו</div>
-                <p id="display-step-title" style="font-weight: bold; margin-top: 4px;">-</p>
-            </div>
-
-            <div class="card">
-                <div class="stat-line">
-                    <span>ה-Check-in היומי</span>
-                    <span id="status-checkin" style="color: var(--text-muted);">טרם בוצע</span>
-                </div>
-                <div class="stat-line">
-                    <span>🎯 הצלחות היום</span>
-                    <span id="count-today" style="font-weight: bold;">0</span>
-                </div>
-                <div class="stat-line">
-                    <span>🏆 הצלחות במחזור הזה</span>
-                    <span id="count-cycle" style="font-weight: bold;">0</span>
-                </div>
-                <div class="stat-line">
-                    <span>❤️ הצלחות מצטברות</span>
-                    <span id="count-total" style="font-weight: bold;">0</span>
-                </div>
-            </div>
-
-            <button class="btn btn-primary" onclick="openCheckin()">בצעי Check-in יומי</button>
-
-            <div class="quick-actions">
-                <button class="btn btn-secondary" onclick="quickAddSuccess()">+ להוסיף הצלחה</button>
-                <button class="btn btn-outline" onclick="alert('ישמר באפיון שלבים הבאים')">+ לשמור תובנה</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 🟣 VIEW: CHECK-IN WIZARD -->
-    <div id="view-checkin" class="view">
-        <h2>ה-Check-in של היום</h2>
-        <div class="subtitle">שלב 1 מתוך 2</div>
+    <!-- אזור התוכן הראשי של האפליקציה -->
+    <main id="app-container">
         
-        <div class="card" style="margin-top: 16px;">
-            <p style="font-weight: bold; text-align: center;">איך היה לך היום?</p>
-            <div class="emoji-grid">
-                <div class="emoji-btn" onclick="selectEmoji('easy', this)">
-                    <span class="icon">🙂</span><span class="lbl">הלך בקלות</span>
+        <!-- מסך 1: היום -->
+        <section id="screen-today" class="app-screen active">
+            <header class="screen-header">
+                <button class="icon-btn">🔔</button>
+                <h1>היום</h1>
+                <button class="icon-btn">⚙️</button>
+            </header>
+            <div class="screen-content">
+                <div class="welcome-box">
+                    <h2>היי מירב 👋</h2>
+                    <p>איך את רוצה להתקדם היום?</p>
                 </div>
-                <div class="emoji-btn" onclick="selectEmoji('mixed', this)">
-                    <span class="icon">🌤️</span><span class="lbl">היו קשיים</span>
-                </div>
-                <div class="emoji-btn" onclick="selectEmoji('hard', this)">
-                    <span class="icon">🌧️</span><span class="lbl">היה קשה</span>
-                </div>
-                <div class="emoji-btn" onclick="selectEmoji('irrelevant', this)">
-                    <span class="icon">➖</span><span class="lbl">לא רלוונטי</span>
-                </div>
+                <!-- כאן ייכנס כרטיס המחזור הפעיל וכפתור ה-Check-in -->
             </div>
-        </div>
+        </section>
 
-        <div id="checkin-step2" class="card" style="display: none;">
-            <p style="font-weight: bold;">מה קרה היום? (בחרי הצלחות קטנות שצברת):</p>
-            <div class="checkbox-list">
-                <label class="checkbox-item"><input type="checkbox" value="פעלתי לפי התוכנית"> <span>פעלתי לפי התוכנית</span></label>
-                <label class="checkbox-item"><input type="checkbox" value="עצרתי לפני שפעלתי"> <span>עצרתי לפני שפעלתי אוטומטית</span></label>
-                <label class="checkbox-item"><input type="checkbox" value="בחרתי באופן מודע"> <span>בחרתי באופן מודע</span></label>
-                <label class="checkbox-item"><input type="checkbox" value="חזרתי לתוכנית אחרי קושי"> <span>חזרתי לתוכנית אחרי קושי</span></label>
-                <label class="checkbox-item"><input type="checkbox" value="זיהיתי דחף בזמן"> <span>זיהיתי דחף בזמן</span></label>
+        <!-- מסך 2: התוכנית שלי -->
+        <section id="screen-program" class="app-screen">
+            <header class="screen-header">
+                <h1>התוכנית שלי</h1>
+            </header>
+            <div class="screen-content">
+                <p>כאן תופיע התוכנית המלאה של המחזור הנוכחי.</p>
             </div>
-        </div>
+        </section>
 
-        <button id="btn-next-checkin" class="btn btn-primary" style="margin-top: 12px;" onclick="nextCheckinStep()" disabled>הבא</button>
-    </div>
+        <!-- מסך 3: הדרך שלי -->
+        <section id="screen-journey" class="app-screen">
+            <header class="screen-header">
+                <h1>הדרך שלי</h1>
+            </header>
+            <div class="screen-content">
+                <p>כאן יופיעו השינויים שהושגו, הצלחות מצטברות ותובנות.</p>
+            </div>
+        </section>
 
-    <!-- 🗺️ MOCK VIEWS FOR NAVIGATION -->
-    <!-- 📋 VIEW: PLAN WIZARD -->
-    <div id="view-plan" class="view">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-            <h2 id="wizard-title">הגדרת מחזור שינוי</h2>
-            <span id="wizard-step-indicator" style="font-weight: bold; color: var(--primary);">שלב 1/11</span>
-        </div>
-        
-        <!-- סרגל פרוגרס קטן עליון בהשראת המוקאפ -->
-        <div id="wizard-progress-bar" style="display: flex; gap: 4px; margin-bottom: 20px;">
-            <!-- ייווצר דינמית על ידי ה-JS -->
-        </div>
+        <!-- מסך 4: עוד / הגדרות -->
+        <section id="screen-more" class="app-screen">
+            <header class="screen-header">
+                <h1>עוד</h1>
+            </header>
+            <div class="screen-content">
+                <p>אפשרויות נוספות, סקירת סוף מחזור והגדרות.</p>
+            </div>
+        </section>
 
-        <div class="card" id="wizard-card-content">
-            <!-- התוכן של השלבים יוזרק כאן דינמית -->
-        </div>
+    </main>
 
-        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 12px; margin-top: 16px;">
-            <button class="btn btn-outline" id="btn-wizard-back" onclick="wizardBack()">אחורה</button>
-            <button class="btn btn-primary" id="btn-wizard-next" onclick="wizardNext()">הבא</button>
-        </div>
-    </div>
-    <div id="view-journey" class="view"><h2>הדרך שלי</h2><p class="subtitle">היסטוריית הצלחות ותובנות מצטברות.</p></div>
-    <div id="view-review" class="view"><h2>סקירה</h2><p class="subtitle">סיכום 21 ימי מחזור השינוי.</p></div>
-
-    <!-- 🦶 BOTTOM NAVIGATION BAR -->
-    <nav class="bottom-nav">
-        <button class="nav-item active" onclick="switchView('today', this)">🏠<span>היום</span></button>
-        <button class="nav-item" onclick="switchView('plan', this)">📋<span>התוכנית שלי</span></button>
-        <button class="nav-item" onclick="switchView('journey', this)">🌱<span>הדרך שלי</span></button>
-        <button class="nav-item" onclick="switchView('review', this)">📊<span>סקירה</span></button>
+    <!-- שורת ניווט תחתונה -->
+    <nav id="bottom-nav">
+        <button class="nav-item active" data-screen="screen-today">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">היום</span>
+        </button>
+        <button class="nav-item" data-screen="screen-program">
+            <span class="nav-icon">📋</span>
+            <span class="nav-label">התוכנית שלי</span>
+        </button>
+        <button class="nav-item" data-screen="screen-journey">
+            <span class="nav-icon">📈</span>
+            <span class="nav-label">הדרך שלי</span>
+        </button>
+        <button class="nav-item" data-screen="screen-more">
+            <span class="nav-icon">•••</span>
+            <span class="nav-label">עוד</span>
+        </button>
     </nav>
 
     <script src="app.js"></script>
