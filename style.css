@@ -1,0 +1,129 @@
+:root {
+    --bg-color: #F7F9FC;
+    --primary-color: #8E7CC3; /* הסגול הראשי מהעיצוב שלך */
+    --primary-light: #EADCF8;
+    --text-color: #333333;
+    --text-light: #666666;
+    --card-bg: #FFFFFF;
+    --nav-bg: #FFFFFF;
+    --border-color: #E2E8F0;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none; /* מניעת בחירת טקסט למראה של אפליקציה */
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* מיכל המסכים הראשי */
+#app-container {
+    flex: 1;
+    position: relative;
+    overflow-y: auto;
+    padding-bottom: 70px; /* מרווח בשביל הניווט התחתון */
+}
+
+/* הגדרות בסיס לכל מסך */
+.app-screen {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    min-height: 100%;
+    padding: 16px;
+}
+
+.app-screen.active {
+    display: flex;
+}
+
+/* כותרות המסכים */
+.screen-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0 24px 0;
+}
+
+.screen-header h1 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+/* תוכן המסך */
+.screen-content {
+    flex: 1;
+}
+
+.welcome-box h2 {
+    font-size: 1.5rem;
+    margin-bottom: 4px;
+}
+
+.welcome-box p {
+    color: var(--text-light);
+    font-size: 0.95rem;
+}
+
+/* שורת ניווט תחתונה */
+#bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 65px;
+    background-color: var(--nav-bg);
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 1000;
+    padding-bottom: env(safe-area-inset-bottom); /* תמיכה באייפונים חדשים */
+}
+
+.nav-item {
+    background: none;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    height: 100%;
+    color: var(--text-light);
+    cursor: pointer;
+    gap: 4px;
+}
+
+.nav-icon {
+    font-size: 1.2rem;
+}
+
+.nav-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* מצב פעיל בניווט */
+.nav-item.active {
+    color: var(--primary-color);
+}
