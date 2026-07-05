@@ -79,6 +79,101 @@
         </button>
     </nav>
 
+<div id="wizard-overlay" class="wizard-container"> <!-- להסרת המצב המוסתר להצגה: הוסיפי קלאס active -->
+    <header class="wizard-header">
+        <button id="wizard-back-btn" class="icon-btn">➡️</button>
+        <span id="wizard-title">הגדרת מחזור שינוי</span>
+        <button id="wizard-close-btn" class="icon-btn">✕</button>
+    </header>
+
+    <!-- נקודות התקדמות העליונות (מדד השלבים) -->
+    <div class="wizard-progress-dots">
+        <span class="dot active" data-step="1"></span>
+        <span class="dot" data-step="2"></span>
+        <span class="dot" data-step="3"></span>
+        <span class="dot" data-step="4"></span>
+        <span class="dot" data-step="5"></span>
+        <span class="dot" data-step="6"></span>
+    </div>
+
+    <div class="wizard-steps-contents">
+        <!-- שלב 1: מה אני רוצה לשנות -->
+        <div class="wizard-step-page active" data-step="1">
+            <h2 class="step-question">מה אני רוצה לשנות?</h2>
+            <p class="step-instruction">כתבי את הכותרת של השינוי שלך</p>
+            <div class="input-group">
+                <input type="text" id="input-change-title" placeholder="למשל: לשתות אלכוהול פעמיים בשבוע" maxlength="80">
+                <span class="char-counter"><span id="title-char-count">0</span>/80</span>
+            </div>
+            
+            <div class="shortcut-box">
+                <p class="shortcut-title">או לבחור שינוי קודם ולהמשיך ממנו</p>
+                <button class="shortcut-btn">📋 מהרשימה שלי</button>
+            </div>
+        </div>
+
+        <!-- שלב 2: איפה אני נמצאת היום -->
+        <div class="wizard-step-page" data-step="2">
+            <h2 class="step-question">איפה אני נמצאת היום?</h2>
+            <p class="step-instruction">הגדירי את נקודת המוצא הנוכחית שלך</p>
+            <div class="input-group">
+                <textarea id="input-starting-point" placeholder="למשל: שותה כמעט כל ערב בסוף יום עבודה" rows="4"></textarea>
+            </div>
+        </div>
+
+        <!-- שלב 3: מה הצעד הבא שאני רוצה לנסות -->
+        <div class="wizard-step-page" data-step="3">
+            <h2 class="step-question">מה הצעד הבא שאני רוצה לנסות?</h2>
+            <p class="step-instruction">לא היעד הסופי. הצעד הבא שמתאים לך עכשיו.</p>
+            <div class="input-group">
+                <input type="text" id="input-next-step" placeholder="למשל: לשתות רק בימי שישי ושבת" maxlength="80">
+                <span class="char-counter"><span id="step-char-count">0</span>/80</span>
+            </div>
+            <div class="tip-box">
+                <span class="tip-icon">💡</span>
+                <p><strong>טיפ:</strong> צעד קטן ומציאותי שקל ליישם מגדיל את הסיכוי להצליח.</p>
+            </div>
+        </div>
+
+        <!-- שלב 4: למה השינוי הזה חשוב לי -->
+        <div class="wizard-step-page" data-step="4">
+            <h2 class="step-question">למה השינוי הזה חשוב לי?</h2>
+            <p class="step-instruction">טקסט אישי קצר שיזכיר לך ברגעים הקשים</p>
+            <div class="input-group">
+                <textarea id="input-why-important" placeholder="למשל: כדי להרגיש חיונית יותר בבקרים ולישון טוב יותר" rows="4"></textarea>
+            </div>
+        </div>
+
+        <!-- שלב 5: מה אני רוצה ללמוד -->
+        <div class="wizard-step-page" data-step="5">
+            <h2 class="step-question">מה אני רוצה ללמוד?</h2>
+            <p class="step-instruction">מה את רוצה לגלות על עצמך במהלך הניסוי?</p>
+            <div class="input-group">
+                <textarea id="input-what-to-learn" placeholder="למשל: אילו טריגרים גורמים לי לרצות לשתות באמצע השבוע" rows="4"></textarea>
+            </div>
+        </div>
+
+        <!-- שלב 6: תקופת הניסוי -->
+        <div class="wizard-step-page" data-step="6">
+            <h2 class="step-question">תקופת הניסוי שלך</h2>
+            <p class="step-instruction">מחזור שינוי הוא ניסוי מוגדר בזמן, לא התחייבות לכל החיים.</p>
+            <div class="duration-selector">
+                <div class="duration-display">
+                    <span class="days-number">21</span>
+                    <span class="days-label">ימים</span>
+                </div>
+                <p class="date-range-info">התחלה: היום | בחינה מחדש: <span id="review-date-display">-</span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- כפתור פעולה תחתון קבוע -->
+    <div class="wizard-footer">
+        <button id="wizard-next-btn" class="wizard-primary-btn">המשך</button>
+        <p class="wizard-footer-note">אפשר לחזור אחורה בכל שלב</p>
+    </div>
+</div>
+
     <script src="app.js"></script>
 </body>
 </html>
