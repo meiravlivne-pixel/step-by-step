@@ -127,3 +127,213 @@ body {
 .nav-item.active {
     color: var(--primary-color);
 }
+/* הוסיפי בסוף קובץ ה-style.css שלך */
+
+.wizard-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--bg-color);
+    z-index: 2000;
+    display: none; /* מוסתר כברירת מחדל */
+    flex-direction: column;
+    padding: 16px;
+}
+
+.wizard-container.active {
+    display: flex; /* מוצג כשהוא פעיל */
+}
+
+.wizard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    font-weight: 600;
+}
+
+/* נקודות התקדמות */
+.wizard-progress-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin: 20px 0;
+}
+
+.wizard-progress-dots .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #D3CCE3;
+    transition: all 0.3s ease;
+}
+
+.wizard-progress-dots .dot.active {
+    background-color: var(--primary-color);
+    transform: scale(1.2);
+}
+
+/* דפי השלבים */
+.wizard-steps-contents {
+    flex: 1;
+    position: relative;
+    margin-top: 10px;
+}
+
+.wizard-step-page {
+    display: none;
+    flex-direction: column;
+    height: 100%;
+}
+
+.wizard-step-page.active {
+    display: flex;
+}
+
+.step-question {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.step-instruction {
+    color: var(--text-light);
+    font-size: 0.95rem;
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+/* שדות קלט */
+.input-group {
+    position: relative;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+}
+
+.input-group input, .input-group textarea {
+    border: none;
+    outline: none;
+    font-family: inherit;
+    font-size: 1.05rem;
+    width: 100%;
+    resize: none;
+    color: var(--text-color);
+}
+
+.char-counter {
+    align-self: flex-end;
+    font-size: 0.75rem;
+    color: #A0AEC0;
+    margin-top: 8px;
+}
+
+/* כרטיסי עזר (טיפים וקיצורים) */
+.tip-box {
+    margin-top: 24px;
+    background-color: #F3F0FC;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    line-height: 1.4;
+    font-size: 0.9rem;
+}
+
+.tip-icon {
+    font-size: 1.2rem;
+}
+
+.shortcut-box {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.shortcut-title {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    margin-bottom: 10px;
+}
+
+.shortcut-btn {
+    background-color: var(--card-bg);
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-family: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.duration-selector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    margin-bottom: 40px;
+}
+
+.duration-display {
+    background-color: var(--primary-light);
+    color: var(--primary-color);
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+.days-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+.days-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.date-range-info {
+    font-size: 0.95rem;
+    color: var(--text-light);
+}
+
+/* חלק תחתון של ה-Wizard */
+.wizard-footer {
+    padding: 16px 0 env(safe-area-inset-bottom) 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.wizard-primary-btn {
+    width: 100%;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(142, 124, 195, 0.2);
+}
+
+.wizard-footer-note {
+    font-size: 0.8rem;
+    color: var(--text-light);
+}
