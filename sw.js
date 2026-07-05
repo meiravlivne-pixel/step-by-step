@@ -1,10 +1,42 @@
-const CACHE_NAME = 'step-by-step-v1';
-const ASSETS = ['index.html', 'app.js', 'manifest.json'];
+const CACHE_NAME = 'hatochnit-v1';
+const ASSETS = [
+  'index.html',
+  'style.css',
+  'app.js',
+  'manifest.json',
+  'icon-192.png',
+  'icon-512.png'
+];
 
+// התקנה ושמירה במטמון
 self.addEventListener('install', (e) => {
-    e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS)));
+  e.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(ASSETS);
+    }).then(() => self.skipWaiting())
+  );
 });
 
+// הפעלה וניקוי קאש ישן
+self.addEventListener('activate', (e) => {
+  e.waitUntil(
+    caches.keys().then((keys) => {
+      return Promise.all(
+        keys.map((key) => {
+          if (key !== CACHE_NAME) {
+            return caches.delete(key);
+          }
+        })
+      );
+    }).then(() => self.clients.claim())
+  );
+});
+
+// אסטרטגיית Fetch
 self.addEventListener('fetch', (e) => {
-    e.respondWith(caches.match(e.request).then(response => response || fetch(e.request)));
+  e.respondWith(
+    fetch(e.request).catch(() => {
+      return caches.match(e.request);
+    })
+  );
 });
