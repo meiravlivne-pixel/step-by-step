@@ -247,3 +247,145 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 400); // השהייה קלה לחוויה חלקה בעין
     }
 });
+// ==========================================
+    // 7. לוגיקת CHECK-IN יומי (מעודכן לפי אפיון)
+    // ==========================================
+    const checkinOverlay = document.getElementById('checkin-overlay');
+    const homeCheckinBtn = document.getElementById('home-checkin-btn');
+    const checkinCloseBtn = document.getElementById('checkin-close-btn');
+    const checkinNextBtn = document.getElementById('checkin-next-btn');
+    const checkinBackBtn = document.getElementById('checkin-back-btn');
+    const checkinStepTitle = document.getElementById('checkin-step-title');
+    
+    let currentCheckinStep = 1;
+    const totalCheckinSteps = 3;
+    
+    let checkinData = {
+        mood: '',
+        whatHappened: [],
+        customHappened: '',
+        successes: []
+    };
+
+    // פתיחת ה-Check-in
+    if (homeCheckinBtn) {
+        homeCheckinBtn.addEventListener('click', () => {
+            currentCheckinStep = 1;
+            checkinData = { mood: '', whatHappened: [], customHappened: '', successes: [] };
+            
+            // איפוס האלמנטים בטופס
+            document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+            document.querySelectorAll('.checkbox-options-list input').forEach(cb => cb.checked = false);
+            document.getElementById('custom-happened-text').value = '';
+            document.getElementById('input-custom-success').value = '';
+            
+            updateCheckinUI();
+            checkinOverlay.classList.add('active');
+        });
+    }
+
+    function updateCheckinUI() {
+        checkinStepTitle.textContent = `תיעוד יומי - שלב ${currentCheckinStep} מתוך ${totalCheckinSteps}`;
+        
+        document.querySelectorAll('.checkin-page').forEach(page => {
+            page.classList.remove('active');
+            if (parseInt(page.getAttribute('data-cstep')) === currentCheckinStep) {
+                page.classList.add('active');
+            }
+        });
+
+        // כפתור חזרה נסתר בשלב 1
+        checkinBackBtn.style.visibility = (currentCheckinStep === 1) ? 'hidden' : 'visible';
+        
+        // טקסט כפתור סיום בשלב 3
+        checkinNextBtn.textContent = (currentCheckinStep === totalCheckinSteps) ? 'שמירה וסיום' : 'המשך';
+    }
+
+    // בחירת אימוג'י בשלב 1
+    document.querySelectorAll('.mood-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            checkinData.mood = btn.getAttribute('data-mood');
+        });
+    });
+
+    // הוספת הצלחה מותאמת אישית דינמית בשלב 3
+    const btnAddCustomSuccess = document.getElementById('btn-add-custom-success');
+    const inputCustomSuccess = document.getElementById('input-custom-success');
+    const successesChipsList = document.getElementById('successes-chips-list');
+
+    if (btnAddCustomSuccess) {
+        btnAddCustomSuccess.addEventListener('click', () => {
+            const val = inputCustomSuccess.value.trim();
+            if (val) {
+                const newLabel = document.createElement('label');
+                newLabel.className = 'custom-checkbox success-chip';
+                newLabel.innerHTML = `<input type="checkbox" value="${val}" checked> <span>${val}</span>`;
+                successesChipsList.insertBefore(newLabel, successesChipsList.firstChild);
+                inputCustomSuccess.value = '';
+            }
+        });
+    }
+
+    // ניווט קדימה / שמירה
+    checkinNextBtn.addEventListener('click', () => {
+        if (currentCheckinStep === 1 && !checkinData.mood) {
+            alert('בבקשה בחרי אימוג׳י כדי להמשיך.');
+            return;
+        }
+
+        if (currentCheckinStep < totalCheckinSteps) {
+            currentCheckinStep++;
+            updateCheckinUI();
+        } else {
+            // שמירת שלב 2 ושלב 3
+            checkinData.customHappened = document.getElementById('custom-happened-text').value.trim();
+            
+            checkinData.whatHappened = [];
+            document.querySelectorAll('#what-happened-list input:checked').forEach(cb => {
+                checkinData.whatHappened.push(cb.value);
+            });
+
+            checkinData.successes = [];
+            document.querySelectorAll('#successes-chips-list input:checked').forEach(cb => {
+                checkinData.successes.push(cb.value);
+            });
+
+            saveCheckinToHistory();
+        }
+    });
+
+    // ניווט אחורה
+    checkinBackBtn.addEventListener('click', () => {
+        if (currentCheckinStep > 1) {
+            currentCheckinStep--;
+            updateCheckinUI();
+        }
+    });
+
+    if (checkinCloseBtn) {
+        checkinCloseBtn.addEventListener('click', () => { checkinOverlay.classList.remove('active'); });
+    }
+
+    function saveCheckinToHistory() {
+        const todayStr = new Date().toISOString().split('T')[0];
+        
+        let history = JSON.parse(localStorage.getItem('cycle_history')) || [];
+        
+        const logEntry = {
+            date: todayStr,
+            ...checkinData
+        };
+
+        history.push(logEntry);
+        localStorage.setItem('cycle_history', JSON.stringify(history));
+
+        // הוספה ועדכון סך כל ההצלחות המצטברות שלך ביישום
+        let totalSuccessesCount = parseInt(localStorage.getItem('total_successes_accumulated')) || 0;
+        totalSuccessesCount += checkinData.successes.length;
+        localStorage.setItem('total_successes_accumulated', totalSuccessesCount);
+
+        alert(`התיעוד נשמר! צברת היום עוד ${checkinData.successes.length} הצלחות לתהליך שלך.`);
+        checkinOverlay.classList.remove('active');
+    }
