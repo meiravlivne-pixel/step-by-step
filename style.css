@@ -506,3 +506,96 @@ body {
     font-size: 0.8rem;
     color: var(--text-light);
 }
+/* עיצוב דפי ה-Check-in */
+.checkin-page {
+    display: none;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: auto;
+    max-height: calc(100vh - 200px);
+    padding-bottom: 10px;
+}
+
+.checkin-page.active {
+    display: flex;
+}
+
+/* כפתורי אימוג'י - שלב 1 */
+.emoji-mood-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.mood-btn {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    text-align: right;
+    font-family: inherit;
+    transition: all 0.2s ease;
+}
+
+.mood-emoji {
+    font-size: 1.8rem;
+}
+
+.mood-text {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.mood-btn.selected {
+    background-color: var(--primary-light);
+    border-color: var(--primary-color);
+}
+
+/* רשימות צ'קבוקסים מותאמות בעיצוב שורות נקיות */
+.checkbox-options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.custom-checkbox {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    direction: rtl;
+    text-align: right;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: background-color 0.2s ease;
+}
+
+.custom-checkbox input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary-color);
+    cursor: pointer;
+}
+
+.custom-checkbox:has(input:checked) {
+    background-color: #F0FFF4; /* ירוק בהיר מאוד וניטרלי המציין בחירה בלבד, ללא שיפוטיות */
+    border-color: #A3BF95;
+}
+
+/* צ'יפסים ייחודיים להצלחות בשלב 3 */
+.success-chip:has(input:checked) {
+    background-color: var(--primary-light);
+    border-color: var(--primary-color);
+}
